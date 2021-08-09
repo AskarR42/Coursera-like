@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html lang="ru" xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+	<head>
+		<meta charset="utf-8">
+		<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+		<title>Список курсов</title>
+		<link rel="stylesheet" th:href="@{https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css}" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
+	</head>
+
+	<body class="text-light bg-dark">
+		<div class="container">
+			<header th:replace="fragments/header :: header"></header>
+
+			<h1>Курсы</h1>
+
+			<div class="row">
+				<div class="col">
+					<a sec:authorize="hasRole('ADMIN')" th:href="@{course/new}" class="btn btn-primary">Создать новый курс</a>
+				</div>
+				<div class="col">
+					<form>
+						<label for="titlePrefix" class="inline">Поиск по названию</label>
+						<input type="text" id="titlePrefix" class="inline" name="titlePrefix" th:value="${param.titlePrefix}">
+						<button class="btn btn-primary">Найти</button>
+					</form>
+				</div>
+			</div>
+
+
+			<table class="text-light table">
+				<thead>
+					<tr>
+						<td>Id</td>
+						<td>Название</td>
+						<td>Автор</td>
+						<td>Действие</td>
+					</tr>
+				</thead>
+
+				<tbody>
+					<tr th:unless="${courses.empty}" th:each="course : ${courses}">
+						<td th:text="${course.id}">id</td>
+						<td>
+							<a th:text="${course.title}" th:href="@{/course/{id}(id = ${course.id})}">title</a>
+						</td>
+						<td th:text="${course.author}">author</td>
+						<td>
+							<div class="row">
+								<div class="col-md-auto">
+									<form sec:authorize="hasRole('ADMIN')" th:method="delete" th:action="@{/course/{id}(id = ${course.id})}">
+										<button class="btn btn-danger">Удалить</button>
+									</form>
+								</div>
+								<div class="col-md-auto">
+									<form sec:authorize="hasRole('ADMIN')" th:method="get" th:action="@{/course/{id}/assign(id = ${course.id})}">
+										<button type="submit" class="btn btn-primary">Назначить</button>
+									</form>
+								</div>
+							</div>
+						</td>
+					</tr>
+					<tr th:if="${courses.empty}">
+						<td colspan="4">Ничего не найдено</td>
+					</tr>
+				</tbody>
+			</table>
+		</div>
+	</body>
+</html>

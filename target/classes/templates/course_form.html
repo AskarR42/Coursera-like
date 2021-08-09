@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html lang="ru" xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+        <title>Редактирование курса</title>
+        <link rel="stylesheet" th:href="@{https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css}" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
+    </head>
+
+    <body class="text-light bg-dark">
+        <div class="container">
+            <header th:replace="fragments/header :: header"></header>
+
+            <h1>Редактирование курса</h1>
+
+            <div class="input-group mb-3">
+                <div class="custom-file">
+                    <input type="file" class="custom-file-input" id="image">
+                    <label class="custom-file-label" for="image" aria-describedby="inputGroupFileAddon02">Выберите обложку курса</label>
+                </div>
+            </div>
+
+            <form th:object="${course}" th:method="post" th:action="@{/course}">
+                <input type="hidden" th:field="*{id}">
+
+                <div class="input-group mb-3">
+                    <div class="input-group-prepend">
+                        <label class="input-group-text" for="title">Название</label>
+                    </div>
+                    <input id="title" type="text" th:class="'form-control ' + ${#fields.hasErrors('title') ? 'is-invalid' : ''}" th:field="*{title}">
+                    <div class="invalid-feedback" th:if="${#fields.hasErrors('title')}" th:errors="*{title}"></div>
+                </div>
+
+                <div class="input-group mb-3">
+                    <div class="input-group-prepend">
+                        <label class="input-group-text" for="author">Автор</label>
+                    </div>
+                    <input id="author" type="text"  th:class="'form-control ' + ${#fields.hasErrors('author') ? 'is-invalid' : ''}" th:field="*{author}">
+                    <div class="invalid-feedback" th:if="${#fields.hasErrors('author')}" th:errors="*{author}"></div>
+                </div>
+
+                <div>
+                  <button type="submit" class="btn btn-primary">Сохранить</button>
+                </div>
+            </form>
+
+            <h3 class="pt-3">Список уроков</h3>
+
+            <div>
+                <a  th:unless="${course.id == null}" th:href="@{/lesson/new(course_id = ${course.id})}" class="btn btn-primary">Создать урок</a>
+            </div>
+
+            <table class="text-light table">
+                <thead>
+                    <tr>
+                        <td>Id</td>
+                        <td>Название</td>
+                        <td>Действие</td>
+                    </tr>
+                </thead>
+
+                <tbody>
+                    <tr th:unless="${#lists.isEmpty(course.lessons)}" th:each="lesson : ${course.lessons}">
+                        <td th:text="${lesson.id}">1</td>
+                        <td>
+                            <a th:text="${lesson.title}" th:href="@{/lesson/{id}(id = ${lesson.id})}">Название урока</a>
+                        </td>
+                        <td>
+                            <form sec:authorize="hasRole('ADMIN')" th:method="delete" th:action="@{/lesson/{id}(id = ${lesson.id})}">
+                                <button class="btn btn-danger">Удалить</button>
+                            </form>
+                        </td>
+                    </tr>
+                    <tr th:if="${#lists.isEmpty(course.lessons)}">
+                        <td colspan="4">Уроков нет</td>
+                    </tr>
+                </tbody>
+            </table>
+
+            <h3 class="pt-3" sec:authorize="hasRole('ADMIN')">Список пользователей</h3>
+
+            <table sec:authorize="hasRole('ADMIN')" class="text-light table">
+                <thead>
+                    <tr>
+                        <td>Id</td>
+                        <td>Имя пользователя</td>
+                        <td>Действие</td>
+                    </tr>
+                </thead>
+
+                <tbody>
+                    <tr th:unless="${#lists.isEmpty(course.users)}" th:each="user : ${course.users}">
+                        <td th:text="${user.id}">id</td>
+                        <td th:text="${user.username}">name</td>
+                        <td>
+
+                            <form th:method="delete" th:action="@{/course/{courseId}/unassign?userId={userId}(courseId = ${course.id}, userId = ${user.id})}">
+                                <button class="btn btn-danger">Снять с курса</button>
+                            </form>
+                        </td>
+                    </tr>
+                    <tr th:if="${#lists.isEmpty(course.users)}">
+                        <td colspan="4">Назначенных пользователей нет</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </body>
+</html>

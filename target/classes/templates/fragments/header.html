@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html lang="ru" xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+
+<header th:fragment="header">
+    <ul class="nav justify-content-center">
+        <li class="nav-item">
+            <span th:classappend="${activePage == 'courses'} ? active">
+                <a class="nav-link" th:href="@{/course}">Курсы</a>
+            </span>
+        </li>
+
+        <li>
+            <span th:classappend="${activePage == 'users'} ? active">
+                <a class="nav-link" th:href="@{/admin/user}">Пользователи</a>
+            </span>
+        </li>
+
+        <li style="margin-left: auto">
+            <a class="btn btn-primary" sec:authorize="!isAuthenticated()" th:href="@{/login}">Войти</a>
+            <form class="float-right" sec:authorize="isAuthenticated()" th:method="post" th:action="@{/logout}">
+                <button class="btn btn-danger">
+                    Выйти
+                </button>
+            </form>
+        </li>
+    </ul>
+</header>
+</html>

@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="ru" xmlns:th="http://www.thymeleaf.org">
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+        <title>Редактирование пользователя</title>
+        <link rel="stylesheet" th:href="@{https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css}" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
+    </head>
+
+    <body class="text-light bg-dark">
+        <div class="container">
+            <header th:replace="fragments/header :: header"></header>
+
+            <h1>Редактирование пользователя</h1>
+
+            <div class="input-group mb-3">
+                <div class="custom-file">
+                    <input type="file" class="custom-file-input" id="inputGroupFile02">
+                    <label class="custom-file-label" for="inputGroupFile02" aria-describedby="inputGroupFileAddon02">Загрузите аватар</label>
+                </div>
+            </div>
+
+            <form th:object="${user}" th:method="post" th:action="@{/admin/user}">
+                <input type="hidden" th:field="*{id}">
+
+                <div class="input-group mb-3">
+                    <div class="input-group-prepend">
+                        <label class="input-group-text" for="name">Имя</label>
+                    </div>
+                    <input id="name" type="text" th:class="'form-control ' + ${#fields.hasErrors('username') ? 'is-invalid' : ''}" th:field="*{username}">
+                    <div class="invalid-feedback" th:if="${#fields.hasErrors('username')}" th:errors="*{username}"></div>
+                </div>
+
+                <div class="input-group mb-3">
+                    <div class="input-group-prepend">
+                        <label class="input-group-text" for="password">Пароль</label>
+                    </div>
+                    <input id="password" type="password" th:class="'form-control ' + ${#fields.hasErrors('password') ? 'is-invalid' : ''}" th:field="*{password}">
+                    <div class="invalid-feedback" th:if="${#fields.hasErrors('password')}" th:error="*{password}"></div>
+                </div>
+
+                <div class="input-group mb-3">
+                    <div class="input-group-prepend">
+                        <label class="input-group-text" for="roles">Роль</label>
+                    </div>
+                    <select class="form-select" multiple id="roles" th:field="*{roles}" required>
+                        <option th:each="role : ${roles}"
+                                th:text="${role.name}"
+                                th:value="${role.id}"
+                                th:selected="${user.roles?.contains(role)}"></option>
+                    </select>
+                </div>
+
+                <div>
+                    <button type="submit" class="btn btn-primary">Сохранить</button>
+                </div>
+            </form>
+        </div>
+
+    </body>
+</html>
